@@ -8,21 +8,27 @@ Copyright: OS-Templates.com
 Licence: Free to use under our free template licence terms
 Licence URI: https://www.os-templates.com/template-terms
 -->
-<html lang="">
+<html lang="en">
 <!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Besloor</title>
+<title>Upload Satellite Image | Landslide Classifier</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
 <link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
 
 </head>
+<style>
+  #pageintro { min-height: 0; padding: 64px 0; }
+  #pageintro article { max-width: 760px; }
+  #pageintro .single-feature { margin: 0; }
+</style>
 <body id="top">
 <!-- ################################################################################################ -->
 <!-- ################################################################################################ -->
 <!-- ################################################################################################ -->
 <!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('images/demo/backgrounds/01.png');"> 
+<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
   <!-- ################################################################################################ -->
   <div class="wrapper row0">
     <div id="topbar" class="hoc clear"> 
@@ -53,12 +59,12 @@ Imagery</a></h1>
       <!-- ################################################################################################ -->
       <nav id="mainav" class="fl_right">
         <ul class="clear">
-          <li><a href="{% url 'dec'  %}">LINEAR REGRESSION</a></li>
-					  <li><a href="{% url 'randomf' %}">RANDOM FOREST REGRESSION</a></li>
-          <li><a href="{% url 'nvb'  %}">INPUT FORM</a>
-						<li><a href="{% url 'mnb' %}">SUPPORT VECTOR REGRESSION</a></li>
-						<li><a href="{% url 'graph'  %}">DECISION TREE REGRESSION</a></li>
-						<li><a href="{% url 'logout'  %}">Logout</a></li>
+          <li><a href="{% url 'accuracy' %}">Home</a></li>
+						{% if request.session.useremail %}
+						<li><a href="{% url 'logout' %}">Logout</a></li>
+						{% else %}
+						<li><a href="{% url 'login' %}">User Login</a></li>
+						{% endif %}
         
         </ul>
       </nav>
@@ -78,26 +84,13 @@ Imagery</a></h1>
 									<h4 style="color:green"></h4>
 								</div>
 								<div class="desc-wrap">
-									<form  action="{% url 'pac'  %}" role="form" method="POST" >{% csrf_token %}
-										<input type="text" placeholder="Enter SUBDIVISION" name="headline1" style="color:red";></input>
-										<input type="text" placeholder="Enter YEAR " name="headline2" style="color:red";></input>
-										<input type="text" placeholder="Enter JAN" name="headline3" style="color:red";></input>
-										<input type="text" placeholder="Enter FEB" name="headline4" style="color:red";></input>
-										<input type="text" placeholder="Enter MAR" name="headline5" style="color:red";></input>
-										<input type="text" placeholder="Enter MAY" name="headline6" style="color:red";></input>
-										<input type="text" placeholder="Enter JUN" name="headline7" style="color:red";></input>
-										<input type="text" placeholder="Enter JUL" name="headline8" style="color:red";></input>
-										<input type="text" placeholder="Enter AUG" name="headline9" style="color:red";></input>
-										<input type="text" placeholder="Enter SEP" name="headline10" style="color:red";></input>
-										<input type="text" placeholder="Enter OCT" name="headline11" style="color:red";></input>
-										<input type="text" placeholder="Enter NOV" name="headline12" style="color:red";></input>
-										<input type="text" placeholder="Enter DEC" name="headline13" style="color:red";></input>
-										<input type="text" placeholder="Enter Jan-Feb" name="headline14" style="color:red";></input>
-										<input type="text" placeholder="Enter Mar-May" name="headline15" style="color:red";></input>
-										<input type="text" placeholder="Enter Jun-Sep" name="headline16" style="color:red";></input>
-										<input type="text" placeholder="Enter Oct-Dec" name="headline17" style="color:red";></input>
+									{% if error %}<p role="alert" style="color:#b00020;background:#fff;padding:12px;">{{ error }}</p>{% endif %}
+									<form action="{% url 'graph' %}" method="post" enctype="multipart/form-data">
+										{% csrf_token %}
+										<label for="myfile" style="display:block;margin:16px;color:white;">Choose a satellite image (JPG or PNG, up to 10 MB)</label>
+										<input id="myfile" type="file" name="myfile" accept="image/*" required style="display:inline-block;width:auto;color:white;">
 									
-										<button type="submit" class="save btn btn-default">Save</button>
+										<button type="submit" class="save btn btn-default">Classify image</button>
 									</form>
 																		
 								</div>

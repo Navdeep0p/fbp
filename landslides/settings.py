@@ -20,12 +20,31 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%4*%lel(x0u16a35w%j%4g#agea!c3ar#nkhkm=pp$_n9&mb!)'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'local-demo-key-change-before-deployment-7f43c8a2e91d6b0f',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
+PRODUCTION = os.environ.get('DJANGO_PRODUCTION', '0') == '1'
 
-ALLOWED_HOSTS = []
+# Allow local development and Django's test client. Production deployments
+# should set DJANGO_ALLOWED_HOSTS to their actual hostnames.
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+if PRODUCTION:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+else:
+    # The bundled runserver workflow is local HTTP; avoid deployment warnings
+    # without forcing HTTPS during the project review demo.
+    SECURE_HSTS_SECONDS = 0
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 
 # Application definition

@@ -1,44 +1,57 @@
+"""Run the bundled model against the labeled sample images."""
+
 import os
+from pathlib import Path
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'landslides.settings')
+
+import django
+
+django.setup()
+
 import numpy as np
-import tensorflow as tf
 from PIL import Image
 
-# Load model
-json_file = open(r'C:\Users\LCS\Desktop\landslides\t2\model.json', 'r')
-loaded_model_json = json_file.read()
-json_file.close()
-model = tf.keras.models.model_from_json(loaded_model_json)
-model.load_weights(r'C:\Users\LCS\Desktop\landslides\t2\model.h5')
-print("Model loaded successfully.")
+from app.views import _load_model
 
-def predict_img(img_path):
-    img = Image.open(img_path).convert('RGB')
-    img = img.resize((50,50))
-    img = np.array(img)
-    im2arr = img.reshape(1,50,50,3)
-    test = np.asarray(im2arr)
-    test = test.astype('float32')
-    test = test/255
-    prediction = model.predict(test)
-    y_pred1 = np.argmax(prediction, axis=1)[0]
-    return y_pred1, prediction
 
-# Let's inspect some images from images/0
-dir0 = r"C:\Users\LCS\Desktop\landslides\t2\images\0"
-print("\n--- Predictions on class 0 (landslide) ---")
-if os.path.exists(dir0):
-    files = [f for f in os.listdir(dir0) if f.lower().endswith(('.png', '.jpg', '.jpeg'))][:5]
-    for f in files:
-        path = os.path.join(dir0, f)
-        pred, raw = predict_img(path)
-        print(f"{f}: pred={pred}, raw={raw}")
+PROJECT_DIR = Path(__file__).resolve().parent
+CLASS_LABELS = {0: 'Landslide', 1: 'No landslide'}
 
-# Let's inspect some images from images/1
-dir1 = r"C:\Users\LCS\Desktop\landslides\t2\images\1"
-print("\n--- Predictions on class 1 (no landslide) ---")
-if os.path.exists(dir1):
-    files = [f for f in os.listdir(dir1) if f.lower().endswith(('.png', '.jpg', '.jpeg'))][:5]
-    for f in files:
-        path = os.path.join(dir1, f)
-        pred, raw = predict_img(path)
-        print(f"{f}: pred={pred}, raw={raw}")
+
+def main():
+    model = _load_model()
+    correct = 0
+    total = 0
+
+    for class_dir in sorted((PROJECT_DIR / 'images').iterdir()):
+        if not class_dir.is_dir() or not class_dir.name.isdigit():
+            continue
+        expected = int(class_dir.name)
+        for image_path in sorted(class_dir.iterdir()):
+            if image_path.suffix.lower() not in {'.jpg', '.jpeg', '.png', '.bmp'}:
+                continue
+            with Image.open(image_path) as image:
+                pixels = np.asarray(
+                    image.convert('RGB').resize((50, 50)), dtype=np.float32
+                )[None, ...] / 255.0
+            probabilities = model.predict(pixels, verbose=0)[0]
+            predicted = int(np.argmax(probabilities))
+            score = float(probabilities[predicted]) * 100
+            expected_label = CLASS_LABELS.get(expected, 'Class {}'.format(expected))
+            predicted_label = CLASS_LABELS.get(predicted, 'Unsupported class {}'.format(predicted))
+            is_correct = predicted == expected
+            correct += int(is_correct)
+            total += 1
+            print('{}: expected={}, predicted={}, score={:.1f}%, {}'.format(
+                image_path.relative_to(PROJECT_DIR), expected_label,
+                predicted_label, score, 'OK' if is_correct else 'MISMATCH',
+            ))
+
+    if not total:
+        raise SystemExit('No labeled sample images found under images/<class>/')
+    print('Sample accuracy: {}/{} ({:.1f}%)'.format(correct, total, correct / total * 100))
+
+
+if __name__ == '__main__':
+    main()

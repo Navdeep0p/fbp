@@ -9,12 +9,13 @@ Copyright: OS-Templates.com
 Licence: Free to use under our free template licence terms
 Licence URI: https://www.os-templates.com/template-terms
 -->
-<html lang="">
+<html lang="en">
 <!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Besloor</title>
+<title>Create Account | Landslide Image Classifier</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
 <link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
 <link href="{% static 'layout/styles/style.css' %}" rel="stylesheet" type="text/css" media="all">
 
@@ -113,7 +114,7 @@ input[type="email"]:valid ~ .validation span:last-child {
 <!-- ################################################################################################ -->
 <!-- ################################################################################################ -->
 <!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('images/demo/backgrounds/01.png');"> 
+<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
   <!-- ################################################################################################ -->
   <div class="wrapper row0">
     <div id="topbar" class="hoc clear"> 
@@ -144,8 +145,8 @@ Imagery</a></h1>
       <!-- ################################################################################################ -->
       <nav id="mainav" class="fl_right">
         <ul class="clear"></br></br>
+		<li><a href="{% url 'accuracy' %}">Home</a></li>
 		<li><a href="{% url 'login'  %}">User Login</a></li>
-		<li><a href="{% url 'reg'  %}">User Register</a></li>
 
          
         
@@ -164,6 +165,7 @@ Imagery</a></h1>
 	   <!-- partial:index.partial.html -->
 <div id="login-form-wrap" style="background-color:white;width: 65%;">
   <h2>Register</h2>{% block content %}
+   {% if error %}<p role="alert" style="color:#b00020;">{{ error }}</p>{% endif %}
    <form  action="{% url 'save'  %}" method="POST">{% csrf_token %}
     <p>
     <input type="text" id="username" name="username" placeholder="Please Enter Username" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
@@ -172,19 +174,19 @@ Imagery</a></h1>
     <input type="password" id="password" name="password" placeholder="Please Enter Password" required style="background-color:white;color:black;"><i class="validation"><span></span><span></span></i>
     </p>
 	    <p>
-    <input type="text" id="email" pattern="^[a-z0-9](\.?[a-z0-9]){5,}@g(oogle)?mail\.com$" name="email" placeholder="Please Enter email" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="email" id="email" name="email" placeholder="Please Enter email" required style="background-color:white;">
     </p>
 	    <p>
-    <input type="text" id="email" name="age" pattern="^(?:1[01][0-9]|120|1[7-9]|[2-9][0-9])$" placeholder="Please Enter age" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="number" id="age" name="age" min="17" max="120" placeholder="Please Enter age" required style="background-color:white;">
     </p>
 	    <p>
-    <input type="text" id="email" name="gender" pattern="^(?:m|M|male|Male|f|F|female|Female)$"  placeholder="Please Enter gender" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="text" id="gender" name="gender" placeholder="Please Enter gender" required style="background-color:white;">
     </p>
 	    <p>
-    <input type="text" id="email" name="phone" pattern="^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$" placeholder="Please Enter phone" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="tel" id="phone" name="phone" placeholder="Please Enter phone" required style="background-color:white;">
     </p>
 	    <p>
-    <input type="text" id="email" name="address" placeholder="Please Enter address" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="text" id="address" name="address" placeholder="Please Enter address" required style="background-color:white;">
     </p>
     <p>
     <input type="submit" value="Save">

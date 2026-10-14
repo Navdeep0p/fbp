@@ -9,12 +9,13 @@ Copyright: OS-Templates.com
 Licence: Free to use under our free template licence terms
 Licence URI: https://www.os-templates.com/template-terms
 -->
-<html lang="">
+<html lang="en">
 <!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Besloor</title>
+<title>Sign In | Landslide Image Classifier</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
 <link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
 <link href="{% static 'layout/styles/style.css' %}" rel="stylesheet" type="text/css" media="all">
 
@@ -111,7 +112,7 @@ input[type="email"]:valid ~ .validation span:last-child {
 <!-- ################################################################################################ -->
 <!-- ################################################################################################ -->
 <!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('images/demo/backgrounds/01.png');"> 
+<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
   <!-- ################################################################################################ -->
   <div class="wrapper row0">
     <div id="topbar" class="hoc clear"> 
@@ -142,8 +143,8 @@ Imagery</a></h1>
       <!-- ################################################################################################ -->
       <nav id="mainav" class="fl_right">
         <ul class="clear"></br></br>
-		<li><a href="{% url 'login'  %}">User Login</a></li>
-		<li><a href="{% url 'reg'  %}">User Register</a></li>
+		<li><a href="{% url 'accuracy' %}">Home</a></li>
+		<li><a href="{% url 'reg'  %}">Create account</a></li>
 
         
         </ul>
@@ -161,12 +162,13 @@ Imagery</a></h1>
 	   <!-- partial:index.partial.html -->
 <div id="login-form-wrap" style="background-color:white;width: 65%;">
   <h2>Login</h2>
+  {% if error %}<p role="alert" style="color:#b00020;">{{ error }}</p>{% endif %}
   <form id="login-form" action="{% url 'loginCheck'  %}" method="POST">{% csrf_token %}{% block content %}
     <p>
-    <input type="text" id="username" name="username" placeholder="Please Enter Username" required "><i class="validation"><span></span><span></span></i>
+    <input type="text" id="username" name="username" placeholder="Please Enter Username" required><i class="validation"><span></span><span></span></i>
     </p>
     <p>
-    <input type="password" id="password" name="email" placeholder="Please Enter Password" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
+    <input type="password" id="password" name="password" placeholder="Please Enter Password" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
     </p>
     <p>
     <input type="submit" id="login" value="Login">

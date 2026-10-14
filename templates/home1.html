@@ -8,12 +8,13 @@ Copyright: OS-Templates.com
 Licence: Free to use under our free template licence terms
 Licence URI: https://www.os-templates.com/template-terms
 -->
-<html lang="">
+<html lang="en">
 <!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Besloor</title>
+<title>Landslide Image Classifier</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
 <link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
 
 </head>
@@ -28,8 +29,8 @@ Licence URI: https://www.os-templates.com/template-terms
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-     height: 750px;
-     padding: 100px 0 0 0;   
+     min-height: 620px;
+     padding: 100px 0 60px;
      }
 
 </style>
@@ -38,7 +39,7 @@ Licence URI: https://www.os-templates.com/template-terms
 <!-- ################################################################################################ -->
 <!-- ################################################################################################ -->
 <!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('images/demo/backgrounds/01.png');"> 
+<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
   <!-- ################################################################################################ -->
   <div class="wrapper row0">
     <div id="topbar" class="hoc clear"> 
@@ -71,7 +72,12 @@ Imagery</a></h1>
         <ul class="clear">
 
         
-						<li><a href="{% url 'logout'  %}">Logout</a></li>
+						{% if request.session.useremail %}
+						<li><a href="{% url 'logout' %}">Logout</a></li>
+						{% else %}
+						<li><a href="{% url 'login' %}">User Login</a></li>
+						<li><a href="{% url 'reg' %}">Create account</a></li>
+						{% endif %}
          
         
         </ul>
@@ -85,10 +91,12 @@ Imagery</a></h1>
   <div id="pageintro" class="hoc clear" style="background-color:green;"> 
     <!-- ################################################################################################ -->
     <article class="center">
-									<form  action="{% url 'graph' %}" method="post" enctype="multipart/form-data">
+									{% if error %}<p role="alert" style="color:#b00020;background:#fff;padding:12px;">{{ error }}</p>{% endif %}
+									<form action="{% url 'graph' %}" method="post" enctype="multipart/form-data">
 										{% csrf_token %}
-										<input type="file" name="myfile">
-										<button type="submit" style="color:black">Upload</button>
+										<label for="myfile" style="display:block;margin:16px;color:white;">Upload a satellite image (up to 10 MB)</label>
+										<input id="myfile" type="file" name="myfile" accept="image/*" required style="display:inline-block;width:auto;color:white;">
+										<button type="submit" style="color:black;padding:12px 24px;">Classify image</button>
 									  </form>
     </article>
     <!-- ################################################################################################ -->

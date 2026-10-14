@@ -1,215 +1,209 @@
-# Libraries
-from django.shortcuts import render,redirect
-from django.http import HttpResponse
+"""Views for the landslide image classification demo."""
 
-import pandas as pd
+import base64
+from functools import lru_cache
+from io import BytesIO
+from pathlib import Path
+
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-import itertools
-from sklearn.naive_bayes import MultinomialNB
-from sklearn import metrics
-from sklearn.linear_model import PassiveAggressiveClassifier
-import os
+import json
+import logging
+from django.conf import settings
+from django.contrib.auth.hashers import check_password, identify_hasher, make_password
+from django.shortcuts import redirect, render
+from django.utils.crypto import constant_time_compare
+from PIL import Image, ImageOps, UnidentifiedImageError
 
-import seaborn as sns
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix,accuracy_score
-# Input data files are available in the "../input/" directory.
-# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
 from app.models import User
 
-################ Home #################
+logger = logging.getLogger(__name__)
+
+
 def home(request):
-	return render(request,'home1.html')
+    return render(request, 'home1.html')
+
+
 def login(request):
-	return render(request,'loginform.html')
+    return render(request, 'loginform.html')
+
+
 def loginCheck(request):
-	if request.method == 'POST':
-		firstname = request.POST.get('username')
-		password = request.POST.get('email')
-		#request.session['firstname'] = firstname 
-		#print(firstname)
-		print(password)
-		user_object=User.objects.get(firstname=firstname,password=password)
-		print('--------------------')
-		print(user_object)
-		try:
-			print('hi')
-			user_object=User.objects.get(firstname=firstname,password=password)
-			print(user_object)
-			if user_object is not None:
-				print('hiiiiiiii')
-				request.session['useremail'] = user_object.email
-				return redirect('home')
-		except:
-			#user_object = None
-			print('hello')
-			return redirect('login')
-	return render(request,'home.html')	
+    if request.method != 'POST':
+        return redirect('login')
+
+    username = request.POST.get('username', '').strip()
+    password = request.POST.get('password') or request.POST.get('email', '')
+    user = User.objects.filter(firstname=username).first()
+    authenticated = bool(user and check_password(password, user.password))
+    if user and not authenticated:
+        try:
+            identify_hasher(user.password)
+        except ValueError:
+            # Upgrade accounts created by the original app, which stored the
+            # submitted password directly, as soon as they next sign in.
+            if constant_time_compare(password, user.password):
+                user.password = make_password(password)
+                user.save(update_fields=['password'])
+                authenticated = True
+
+    if authenticated:
+        request.session['useremail'] = user.email
+        return redirect('home')
+
+    return render(request, 'loginform.html', {'error': 'Invalid username or password.'})
+
+
 def logout(request):
-	return render(request,'index.html')	
+    request.session.pop('useremail', None)
+    return redirect('accuracy')
+
+
 def reg(request):
-	return render(request,'register.html')
+    return render(request, 'register.html')
 
-######## SVM ######
+
 def save(request):
-	if request.method == 'POST':
-		print('printtttttttttttttttttttttttttttttttt')
-		print('checkkkkkkkkkkkkkkkkk')
-		username= request.POST.get('username')
-		password= request.POST.get('password')
-		address= request.POST.get('address')
-		email= request.POST.get('email')
-		age= request.POST.get('age')
-		gender= request.POST.get('gender')
-		phone= request.POST.get('phone')
-		user=User()
-		user.firstname= request.POST.get('username')
-		user.password= request.POST.get('password')
-		user.address= request.POST.get('address')
-		user.email= request.POST.get('email')
-		user.age= request.POST.get('age')
-		user.gender= request.POST.get('gender')
-		user.phone= request.POST.get('phone')
-		user.save()		
-		return render(request,'loginform.html')
-	return render(request,'loginform.html')	
+    if request.method != 'POST':
+        return redirect('reg')
+
+    fields = {
+        'firstname': request.POST.get('username', '').strip(),
+        'email': request.POST.get('email', '').strip().lower(),
+        'age': request.POST.get('age', '').strip(),
+        'gender': request.POST.get('gender', '').strip(),
+        'phone': request.POST.get('phone', '').strip(),
+        'address': request.POST.get('address', '').strip(),
+    }
+    password = request.POST.get('password', '')
+    if not all(fields.values()) or not password:
+        return render(request, 'register.html', {
+            'error': 'Please complete every field.', 'form_data': request.POST,
+        })
+    try:
+        fields['age'] = int(fields['age'])
+        if not 17 <= fields['age'] <= 120:
+            raise ValueError
+    except ValueError:
+        return render(request, 'register.html', {
+            'error': 'Enter an age between 17 and 120.', 'form_data': request.POST,
+        })
+    if User.objects.filter(email=fields['email']).exists():
+        return render(request, 'register.html', {
+            'error': 'An account with this email already exists.', 'form_data': request.POST,
+        })
+    if User.objects.filter(firstname=fields['firstname']).exists():
+        return render(request, 'register.html', {
+            'error': 'That username is already in use.', 'form_data': request.POST,
+        })
+
+    User.objects.create(password=make_password(password), **fields)
+    return redirect('login')
 
 
-######## SVM ######
 def nvb(request):
-	return render(request,'pacweb1.html')
-def pac(request):				 
-	return render(request,'result.html')
-def svm(request):	
-	return render(request,'acc1.html')		
+    return render(request, 'pacweb1.html')
+
+
+def pac(request):
+    return redirect('nvb')
+
+
+def svm(request):
+    return redirect('nvb')
+
+
 def dec(request):
+    return redirect('nvb')
 
-	return render(request,'acc1.html')
+
 def randomf(request):
-	return render(request,'acc1.html')
+    return redirect('nvb')
+
+
 def mnb(request):
-	return render(request,'acc1.html')
+    return redirect('nvb')
+
+
+@lru_cache(maxsize=1)
+def _load_model():
+    """Load the bundled model once per application process."""
+    import tensorflow as tf
+
+    model_path = Path(settings.BASE_DIR)
+    with (model_path / 'model.json').open(encoding='utf-8') as model_file:
+        architecture = json.load(model_file)
+    try:
+        model = tf.keras.models.model_from_json(json.dumps(architecture))
+    except (TypeError, ValueError):
+        # The supplied JSON was exported by Keras 2.2 and uses layer config
+        # names removed by Keras 3. Rebuild the same supported layer sequence.
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=(50, 50, 3)),
+            tf.keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dropout(0.5),
+            tf.keras.layers.Dense(7, activation='softmax'),
+        ])
+    model.load_weights(str(model_path / 'model.h5'))
+    return model
+
+
 def graph(request):
-	if request.method == 'POST' and request.FILES['myfile']:
-		# Importing libraries
-		import os
-		import pandas as pd
-		import numpy as np
-		import matplotlib.pyplot as plt
-		from matplotlib.image import imread
-		import seaborn as sns
-		import random
-		from PIL import Image
-		from sklearn.model_selection import	 train_test_split
-		from tensorflow.keras.utils import to_categorical
-		import tensorflow as tf
-		from tensorflow.keras.models import Sequential, model_from_json
-		from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv2D, MaxPool2D
-		myfile = request.FILES['myfile']
-		file1=myfile.name
-		######
-		
-		
-		##########################
-		
-		
-		################################
-		import sys,os
-		print('*******************************************************************')
-		print(os.path.join(os.getcwd(), 'img', file1))
-		print('*******************************************************************')
-		import os
-		dirname = os.path.dirname(__file__)
-		filename = os.path.join(dirname, myfile.name)
-		print(filename)
-		global model
-		from keras.models import model_from_json
+    if request.method != 'POST':
+        return render(request, 'home1.html')
 
-		dim1 = []
-		dim2 = []
+    uploaded = request.FILES.get('myfile')
+    if not uploaded:
+        return render(request, 'home1.html', {'error': 'Choose an image to classify.'})
+    if uploaded.size > 10 * 1024 * 1024:
+        return render(request, 'home1.html', {'error': 'Image must be 10 MB or smaller.'})
+
+    try:
+        with Image.open(uploaded) as image:
+            if image.width * image.height > 50_000_000:
+                return render(request, 'home1.html', {
+                    'error': 'Image dimensions are too large. Use an image under 50 megapixels.',
+                })
+            image = ImageOps.exif_transpose(image).convert('RGB')
+            preview = image.copy()
+            preview.thumbnail((1400, 1000))
+            preview_buffer = BytesIO()
+            preview.save(preview_buffer, format='JPEG', quality=82, optimize=True)
+            image_preview = base64.b64encode(preview_buffer.getvalue()).decode('ascii')
+            image = image.resize((50, 50))
+            pixels = np.asarray(image, dtype=np.float32)[None, ...] / 255.0
+    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
+        return render(request, 'home1.html', {'error': 'Upload a valid JPG, PNG, or other image file.'})
+
+    try:
+        probabilities = _load_model().predict(pixels, verbose=0)[0]
+    except Exception:
+        logger.exception('Unable to load or run the bundled landslide model')
+        return render(request, 'home1.html', {
+            'error': 'The prediction model could not be loaded. Check the TensorFlow installation and model files.',
+        })
+
+    class_index = int(np.argmax(probabilities))
+    # The packaged training folders define class 0 as landslide and class 1
+    # as no landslide. Remaining output neurons have no documented labels.
+    if class_index >= 2:
+        return render(request, 'home1.html', {
+            'error': 'This model returned an unsupported class. Please try another image or verify the model training labels.',
+        })
+    labels = ['Landslide', 'No landslide']
+    label = labels[class_index]
+    return render(request, 'result.html', {
+        'predictedvalue': label,
+        'model_score': '{:.1f}%'.format(float(probabilities[class_index]) * 100),
+        'image_preview': image_preview,
+    })
 
 
-		
-
-		
-		#to save model into model.h5
-		'''model_json = model.model.to_json()
-		with open("E:/2022projects/latest/dfu/model.json", "w") as json_file:
-			json_file.write(model_json)
-		# serialize weights to HDF5
-		model.model.save_weights("E:/2022projects/latest/dfu/model.h5")
-		print("Saved model to disk")'''
-		
-		
-		#to load model
-		from keras.models import model_from_json
-		global model
-		# load json and create model
-		json_file = open(r'C:\Users\LCS\Desktop\landslides\t2\model.json', 'r')
-		loaded_model_json = json_file.read()
-		json_file.close()
-		model = tf.keras.models.model_from_json(loaded_model_json)
-		# load weights into new model
-		model.load_weights(r'C:\Users\LCS\Desktop\landslides\t2\model.h5')
-		print("Loaded model from disk")		
-		
-		
-		
-		
-
-		# Save the uploaded file to test_images directory
-		import os
-		test_images_dir = r"C:\Users\LCS\Desktop\landslides\t2\test_images"
-		if not os.path.exists(test_images_dir):
-			os.makedirs(test_images_dir)
-		
-		testimg_path = os.path.join(test_images_dir, file1)
-		with open(testimg_path, 'wb+') as destination:
-			for chunk in myfile.chunks():
-				destination.write(chunk)
-		
-		img = Image.open(testimg_path).convert('RGB')
-		img = img.resize((50,50))
-		img = np.array(img)
-		im2arr = img.reshape(1,50,50,3)
-		test = np.asarray(im2arr)
-		test = test.astype('float32')
-		test = test/255
-
-		prediction = model.predict(test)
-		y_pred1 = np.argmax(prediction, axis=1)[0]
-		print(y_pred1)
-
-		if y_pred1==0:
-			import cv2
-			from imutils import paths
-			import imutils
-			imagedisplay = cv2.imread(testimg_path)
-			orig = imagedisplay.copy()
-			output = imutils.resize(orig, width=400)
-			cv2.putText(output, "land slide", (10, 25),	cv2.FONT_HERSHEY_SIMPLEX,0.7, (0, 255, 0), 2)
-			cv2.imshow("Predicted Image Result", output)
-			cv2.waitKey(0)
-			return render(request, 'home1.html')
-		elif y_pred1==1:
-			import cv2
-			from imutils import paths
-			import imutils
-			imagedisplay = cv2.imread(testimg_path)
-			orig = imagedisplay.copy()
-			output = imutils.resize(orig, width=400)
-			cv2.putText(output, "no landslide", (10, 25),	 cv2.FONT_HERSHEY_SIMPLEX,0.7, (0, 255, 0), 2)
-			cv2.imshow("Predicted Image Result", output)
-			cv2.waitKey(0)
-			return render(request, 'home1.html')
-	return render(request,'home1.html')
 def accuracy(request):
-	return render(request,'index.html')
-			
+    return render(request, 'index.html')
