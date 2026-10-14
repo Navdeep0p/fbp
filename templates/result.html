@@ -1,128 +1,47 @@
 {% load static %}
-<!DOCTYPE html>
-<!--
-Template Name: Besloor
-Author: <a href="https://www.os-templates.com/">OS Templates</a>
-Author URI: https://www.os-templates.com/
-Copyright: OS-Templates.com
-Licence: Free to use under our free template licence terms
-Licence URI: https://www.os-templates.com/template-terms
--->
+<!doctype html>
 <html lang="en">
-<!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Prediction Result | Landslide Image Classifier</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
-<link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
-<style>
-  .result-background {
-    background-image: linear-gradient(rgba(8, 16, 22, .20), rgba(8, 16, 22, .20)),
-      url("data:image/jpeg;base64,{{ image_preview }}");
-    background-position: center;
-    background-size: cover;
-    background-attachment: fixed;
-  }
-  #pageintro { min-height: calc(100vh - 150px); padding: 48px 0; display: flex; align-items: center; }
-  #pageintro article { max-width: 850px; width: 92%; }
-  #pageintro footer { margin-top: 0; }
-  .result-stack { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-  .prediction-card {
-    display: block;
-    padding: 22px 34px;
-    color: #fff;
-    background: rgba(13, 25, 32, .62);
-    border: 1px solid rgba(255, 255, 255, .55);
-    border-radius: 12px;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, .24);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, .9);
-    backdrop-filter: blur(3px);
-  }
-  .prediction-card h2, .prediction-card h3 { margin: 8px 0 0; color: #fff; }
-  .prediction-card small { display: block; max-width: 330px; margin-top: 10px; color: #fff; }
-  .result-stack .btn { color: #fff; background: rgba(13, 25, 32, .78); border-color: rgba(255, 255, 255, .65); }
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17211d">
+  <title>Prediction Result | Landslide Image Classifier</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
+  <link rel="stylesheet" href="{% static 'layout/styles/minimal.css' %}">
 </head>
-<body id="top">
-<div class="bgded result-background">
-  <!-- ################################################################################################ -->
-  <div class="wrapper row0">
-    <div id="topbar" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div class="fl_left"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <div class="fl_right"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <!-- ################################################################################################ -->
+<body class="minimal-page result-page" style="background-image: linear-gradient(rgba(8,16,22,.42), rgba(8,16,22,.58)), url('data:image/jpeg;base64,{{ image_ambient }}'); background-position: center; background-size: cover; background-attachment: fixed;">
+  <header class="minimal-header">
+    <a class="minimal-brand" href="{% url 'accuracy' %}">
+      <img src="{% static 'images/landslide.svg' %}" alt="">
+      <span>Landslide Image Classifier</span>
+    </a>
+    <nav class="minimal-nav" aria-label="Main navigation">
+      <a href="{% url 'accuracy' %}">Home</a>
+      {% if request.session.useremail %}
+        <a href="{% url 'logout' %}">Log out</a>
+      {% else %}
+        <a href="{% url 'login' %}">Log in</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="minimal-main result-content">
+    <div class="result-image-frame">
+      <img class="result-image" src="data:image/jpeg;base64,{{ image_preview }}" alt="Uploaded image used for this prediction">
     </div>
-  </div>
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
- <div class="wrapper row1">
-    <header id="header" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div id="logo" class="fl_left">
-        <h1><a href="#">Artificial Intelligence Techniques for Landslides Prediction Using Satellite
-Imagery</a></h1>
+    <section class="result-metrics" aria-label="Prediction result">
+      <div class="result-metric">
+        <div class="result-metric-label">PREDICTION</div>
+        <h2>{{ predictedvalue|default:"No result available" }}</h2>
       </div>
-      <!-- ################################################################################################ -->
-      <nav id="mainav" class="fl_right">
-        <ul class="clear">
-          <li><a href="{% url 'nvb' %}">Classify another image</a></li>
-						<li><a href="{% url 'accuracy' %}">Home</a></li>
-						{% if request.session.useremail %}<li><a href="{% url 'logout' %}">Logout</a></li>{% else %}<li><a href="{% url 'login' %}">User Login</a></li>{% endif %}
-        
-        </ul>
-      </nav>
-      <!-- ################################################################################################ -->
-    </header>
-  </div>
-<div id="pageintro" class="hoc clear"> 
-    <!-- ################################################################################################ -->
-    <article class="center result-stack">
-      <footer><div class="prediction-card">PREDICTION<h2>{{ predictedvalue|default:"No result available" }}</h2></div></footer>
-	  {% if model_score %}<footer><div class="prediction-card">MODEL SCORE<h3>{{ model_score }}</h3><small>Softmax score; not a validated accuracy measure.</small></div></footer>{% endif %}
-	  <p><a class="btn" href="{% url 'nvb' %}">Classify another image</a></p>
-    </article>
-    <!-- ################################################################################################ -->
-  </div>
-  <!-- ################################################################################################ -->
-</div>
-<!-- End Top Background Image Wrapper -->
-
-
-<div class="wrapper row2">
-  <section class="hoc container clear"> 
-    <!-- ################################################################################################ -->
-    <div class="center btmspace-80">
-      
-    </div>
-   
-  </section>
-</div>
-
-
-<div class="wrapper row5">
-  <div id="copyright" class="hoc clear"> 
-    <!-- ################################################################################################ -->
-  </div>
-</div>
-<a id="backtotop" href="#top"><i class="fas fa-chevron-up"></i></a>
-<!-- JAVASCRIPTS -->
-<script src="{% static 'layout/scripts/jquery.min.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.backtotop.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.mobilemenu.js' %}"></script>
-
+      {% if model_score %}
+        <div class="result-metric">
+          <div class="result-metric-label">MODEL SCORE</div>
+          <h2>{{ model_score }}</h2>
+          <small>Softmax score; not a validated accuracy measure.</small>
+        </div>
+      {% endif %}
+    </section>
+    <a class="minimal-button" href="{% url 'nvb' %}">Classify another image</a>
+  </main>
 </body>
 </html>

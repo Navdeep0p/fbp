@@ -78,6 +78,8 @@ class ClassifierFlowTests(TestCase):
         self.assertContains(response, 'Landslide')
         self.assertContains(response, '90.0%')
         self.assertContains(response, 'data:image/jpeg;base64,')
+        self.assertContains(response, 'Uploaded image used for this prediction')
+        self.assertContains(response, 'background-image: linear-gradient')
 
     def test_missing_and_invalid_images_are_rejected_cleanly(self):
         response = self.client.post('/graph/')

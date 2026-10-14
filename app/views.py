@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import check_password, identify_hasher, make_password
 from django.shortcuts import redirect, render
 from django.utils.crypto import constant_time_compare
-from PIL import Image, ImageOps, UnidentifiedImageError
+from PIL import Image, ImageFilter, ImageOps, UnidentifiedImageError
 
 from app.models import User
 
@@ -174,8 +174,14 @@ def graph(request):
             preview = image.copy()
             preview.thumbnail((1400, 1000))
             preview_buffer = BytesIO()
-            preview.save(preview_buffer, format='JPEG', quality=82, optimize=True)
+            preview.save(preview_buffer, format='JPEG', quality=94, optimize=True, subsampling=0)
             image_preview = base64.b64encode(preview_buffer.getvalue()).decode('ascii')
+            ambient = preview.copy()
+            ambient.thumbnail((720, 520))
+            ambient = ambient.filter(ImageFilter.GaussianBlur(radius=24))
+            ambient_buffer = BytesIO()
+            ambient.save(ambient_buffer, format='JPEG', quality=76, optimize=True)
+            image_ambient = base64.b64encode(ambient_buffer.getvalue()).decode('ascii')
             image = image.resize((50, 50))
             pixels = np.asarray(image, dtype=np.float32)[None, ...] / 255.0
     except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
@@ -202,6 +208,7 @@ def graph(request):
         'predictedvalue': label,
         'model_score': '{:.1f}%'.format(float(probabilities[class_index]) * 100),
         'image_preview': image_preview,
+        'image_ambient': image_ambient,
     })
 
 

@@ -1,222 +1,59 @@
 {% load static %}
-
-<!DOCTYPE html>
-<!--
-Template Name: Besloor
-Author: <a href="https://www.os-templates.com/">OS Templates</a>
-Author URI: https://www.os-templates.com/
-Copyright: OS-Templates.com
-Licence: Free to use under our free template licence terms
-Licence URI: https://www.os-templates.com/template-terms
--->
+<!doctype html>
 <html lang="en">
-<!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Create Account | Landslide Image Classifier</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
-<link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
-<link href="{% static 'layout/styles/style.css' %}" rel="stylesheet" type="text/css" media="all">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f5">
+  <title>Create account | Landslide Image Classifier</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
+  <link rel="stylesheet" href="{% static 'layout/styles/minimal.css' %}">
 </head>
-<style>
-#pageintro{
-        background-image: url('{% static 'images/2.jpg' %}');
-     color: white;
-	  /* Full height */
-
-
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-     height: 750px;
-     padding: 100px 0 0 0;   
-     }
-
-
-	 
-	 input {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  outline: none;
-  height: 60px;
-  line-height: 60px;
-  border-radius: 4px;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-  width: 100%;
-  padding: 0 0 0 10px;
-  margin: 0;
-  color: #8a8b8e;
-  border: 1px solid #c2c0ca;
-  font-style: normal;
-  font-size: 16px;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  position: relative;
-  display: inline-block;
-  background: none;
-}
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus {
-  border-color: #3ca9e2;
-}
-input[type="text"]:focus:invalid,
-input[type="password"]:focus:invalid,
-input[type="email"]:focus:invalid {
-  color: #cc1e2b;
-  border-color: #cc1e2b;
-}
-input[type="text"]:valid ~ .validation,
-input[type="password"]:valid ~ .validation,
-input[type="email"]:valid ~ .validation {
-  display: block;
-  border-color: #0C0;
-}
-input[type="text"]:valid ~ .validation span,
-input[type="password"]:valid ~ .validation span,
-input[type="email"]:valid ~ .validation span {
-  background: #0C0;
-  position: absolute;
-  border-radius: 6px;
-}
-input[type="text"]:valid ~ .validation span:first-child,
-input[type="password"]:valid ~ .validation span:first-child,
-input[type="email"]:valid ~ .validation span:first-child {
-  top: 30px;
-  left: 14px;
-  width: 20px;
-  height: 3px;
-  -webkit-transform: rotate(-45deg);
-          transform: rotate(-45deg);
-}
-input[type="text"]:valid ~ .validation span:last-child,
-input[type="password"]:valid ~ .validation span:last-child,
-input[type="email"]:valid ~ .validation span:last-child {
-  top: 35px;
-  left: 8px;
-  width: 11px;
-  height: 3px;
-  -webkit-transform: rotate(45deg);
-          transform: rotate(45deg);
-}
-</style>
-<body id="top" style="background-color:maroon;">
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
-  <!-- ################################################################################################ -->
-  <div class="wrapper row0">
-    <div id="topbar" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div class="fl_left"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <div class="fl_right"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <!-- ################################################################################################ -->
-    </div>
-  </div>
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <div class="wrapper row1">
-    <header id="header" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div id="logo" class="fl_left">
-        <h1><a href="#">Artificial Intelligence Techniques for Landslides Prediction Using Satellite
-Imagery</a></h1>
-      </div>
-      <!-- ################################################################################################ -->
-      <nav id="mainav" class="fl_right">
-        <ul class="clear"></br></br>
-		<li><a href="{% url 'accuracy' %}">Home</a></li>
-		<li><a href="{% url 'login'  %}">User Login</a></li>
-
-         
-        
-        </ul>
-      </nav>
-      <!-- ################################################################################################ -->
-    </header>
-  </div>
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <div id="pageintro" class="hoc clear" style="background-color:green;"> 
-    <!-- ################################################################################################ -->
-    <article class="center">
-      
-	   <!-- partial:index.partial.html -->
-<div id="login-form-wrap" style="background-color:white;width: 65%;">
-  <h2>Register</h2>{% block content %}
-   {% if error %}<p role="alert" style="color:#b00020;">{{ error }}</p>{% endif %}
-   <form  action="{% url 'save'  %}" method="POST">{% csrf_token %}
-    <p>
-    <input type="text" id="username" name="username" placeholder="Please Enter Username" required style="background-color:white;"><i class="validation"><span></span><span></span></i>
-    </p>
-    <p>
-    <input type="password" id="password" name="password" placeholder="Please Enter Password" required style="background-color:white;color:black;"><i class="validation"><span></span><span></span></i>
-    </p>
-	    <p>
-    <input type="email" id="email" name="email" placeholder="Please Enter email" required style="background-color:white;">
-    </p>
-	    <p>
-    <input type="number" id="age" name="age" min="17" max="120" placeholder="Please Enter age" required style="background-color:white;">
-    </p>
-	    <p>
-    <input type="text" id="gender" name="gender" placeholder="Please Enter gender" required style="background-color:white;">
-    </p>
-	    <p>
-    <input type="tel" id="phone" name="phone" placeholder="Please Enter phone" required style="background-color:white;">
-    </p>
-	    <p>
-    <input type="text" id="address" name="address" placeholder="Please Enter address" required style="background-color:white;">
-    </p>
-    <p>
-    <input type="submit" value="Save">
-    </p>
-  </form>
-{% endblock %}
-<!-- partial -->
-    </article>
-    <!-- ################################################################################################ -->
-  </div>
-  <!-- ################################################################################################ -->
-</div>
-<!-- End Top Background Image Wrapper -->
-
-
-
-
-
-<div class="wrapper row5">
-  <div id="copyright" class="hoc clear"> 
-    <!-- ################################################################################################ -->
-  </div>
-</div>
-<a id="backtotop" href="#top"><i class="fas fa-chevron-up"></i></a>
-<!-- JAVASCRIPTS -->
-<script src="{% static 'layout/scripts/jquery.min.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.backtotop.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.mobilemenu.js' %}"></script>
-
+<body class="minimal-page">
+  <header class="minimal-header">
+    <a class="minimal-brand" href="{% url 'accuracy' %}">
+      <img src="{% static 'images/landslide.svg' %}" alt="">
+      <span>Landslide Image Classifier</span>
+    </a>
+    <nav class="minimal-nav" aria-label="Main navigation">
+      <a href="{% url 'accuracy' %}">Home</a>
+      <a href="{% url 'login' %}">Log in</a>
+    </nav>
+  </header>
+  <main class="minimal-main auth-layout">
+    <section class="auth-card" aria-labelledby="register-title">
+      <h1 id="register-title">Create your account</h1>
+      <p>Enter your details to get started.</p>
+      {% if error %}<p class="auth-error" role="alert">{{ error }}</p>{% endif %}
+      <form class="auth-form" action="{% url 'save' %}" method="post">
+        {% csrf_token %}
+        <div class="auth-fields">
+          <label class="auth-field">Username
+            <input type="text" name="username" value="{{ form_data.username|default:'' }}" autocomplete="username" required>
+          </label>
+          <label class="auth-field">Password
+            <input type="password" name="password" autocomplete="new-password" required>
+          </label>
+          <label class="auth-field">Email
+            <input type="email" name="email" value="{{ form_data.email|default:'' }}" autocomplete="email" required>
+          </label>
+          <label class="auth-field">Age
+            <input type="number" name="age" min="17" max="120" value="{{ form_data.age|default:'' }}" required>
+          </label>
+          <label class="auth-field">Gender
+            <input type="text" name="gender" value="{{ form_data.gender|default:'' }}" required>
+          </label>
+          <label class="auth-field">Phone
+            <input type="tel" name="phone" value="{{ form_data.phone|default:'' }}" autocomplete="tel" required>
+          </label>
+        </div>
+        <label class="auth-field">Address
+          <input type="text" name="address" value="{{ form_data.address|default:'' }}" autocomplete="street-address" required>
+        </label>
+        <button class="upload-submit" type="submit">Create account</button>
+      </form>
+      <p class="auth-footnote">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </section>
+  </main>
 </body>
 </html>

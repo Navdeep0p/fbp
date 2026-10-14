@@ -1,133 +1,32 @@
 {% load static %}
-<!DOCTYPE html>
-<!--
-Template Name: Besloor
-Author: <a href="https://www.os-templates.com/">OS Templates</a>
-Author URI: https://www.os-templates.com/
-Copyright: OS-Templates.com
-Licence: Free to use under our free template licence terms
-Licence URI: https://www.os-templates.com/template-terms
--->
+<!doctype html>
 <html lang="en">
-<!-- To declare your language - read more here: https://www.w3.org/International/questions/qa-html-language-declarations -->
 <head>
-<title>Landslide Image Classifier</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
-<link href="{% static 'layout/styles/layout.css' %}" rel="stylesheet" type="text/css" media="all">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f5">
+  <title>Landslide Image Classifier</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/landslide.svg' %}">
+  <link rel="stylesheet" href="{% static 'layout/styles/minimal.css' %}">
 </head>
-<style>
-#pageintro{
-        background-image: url('{% static 'images/2.jpg' %}');
-     color: white;
-	  /* Full height */
-
-
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-     height: 750px;
-     padding: 100px 0 0 0;   
-     }
-
-</style>
-{% block content %}
-<body id="top">
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- Top Background Image Wrapper -->
-<div class="bgded overlay" style="background-image:url('{% static 'images/2.jpg' %}');"> 
-  <!-- ################################################################################################ -->
-  <div class="wrapper row0">
-    <div id="topbar" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div class="fl_left"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <div class="fl_right"> 
-        <!-- ################################################################################################ -->
-        
-        <!-- ################################################################################################ -->
-      </div>
-      <!-- ################################################################################################ -->
-    </div>
-  </div>
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <div class="wrapper row1">
-    <header id="header" class="hoc clear"> 
-      <!-- ################################################################################################ -->
-      <div id="logo" class="fl_left">
-        <h1><a href="#" >Artificial Intelligence Techniques for Landslides Prediction Using Satellite
-Imagery</a></h1>
-      </div>
-      <!-- ################################################################################################ -->
-      <nav id="mainav" class="fl_right">
-        <ul class="clear">
-		<li><a href="{% url 'nvb' %}">Classify an image</a></li>
-		<li><a href="{% url 'login'  %}">User Login</a></li>
-		<li><a href="{% url 'reg'  %}">Create account</a></li>
-
-         
-        
-        </ul>
-      </nav>
-      <!-- ################################################################################################ -->
-    </header>
-  </div>
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <!-- ################################################################################################ -->
-  <div id="pageintro" class="hoc clear" style="background-color:green;"> 
-    <!-- ################################################################################################ -->
-    <article class="center">
-      <h2>Satellite Image Landslide Classifier</h2>
-      <p>Upload a satellite image to see the model’s prediction.</p>
-      <footer><a class="btn" href="{% url 'nvb' %}">Start classification</a></footer>
-    </article>
-    <!-- ################################################################################################ -->
-  </div>
-  <!-- ################################################################################################ -->
-</div>
-<!-- End Top Background Image Wrapper -->
-
-
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<!-- ################################################################################################ -->
-<div class="wrapper row2" id="test">
-  <section class="hoc container clear"> 
-    <!-- ################################################################################################ -->
-    <div class="center btmspace-80">
-      
-    </div>
-   
-    <footer class="center"><a class="btn" href="{% url 'nvb' %}">Open image upload</a></footer>
-    <!-- ################################################################################################ -->
-  </section>
-</div>
-
-
-<div class="wrapper row5">
-  <div id="copyright" class="hoc clear"> 
-    <!-- ################################################################################################ -->
-  </div>
-</div>
-<a id="backtotop" href="#top"><i class="fas fa-chevron-up"></i></a>
-<!-- JAVASCRIPTS -->
-<script src="{% static 'layout/scripts/jquery.min.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.backtotop.js' %}"></script>
-
-<script src="{% static 'layout/scripts/jquery.mobilemenu.js' %}"></script>
-
+<body class="minimal-page">
+  <header class="minimal-header">
+    <a class="minimal-brand" href="{% url 'accuracy' %}">
+      <img src="{% static 'images/landslide.svg' %}" alt="">
+      <span>Landslide Image Classifier</span>
+    </a>
+    <nav class="minimal-nav" aria-label="Main navigation">
+      <a href="{% url 'login' %}">Log in</a>
+      <a href="{% url 'reg' %}">Create account</a>
+    </nav>
+  </header>
+  <main class="minimal-main home-layout">
+    <section class="home-panel">
+      <p class="eyebrow">Satellite image analysis</p>
+      <h1>Artificial Intelligence Techniques for Landslides Prediction Using Satellite Imagery</h1>
+      <p>Classify satellite imagery with the project’s landslide prediction model.</p>
+      <a class="minimal-button" href="{% url 'nvb' %}">Start classification</a>
+    </section>
+  </main>
 </body>
-{% endblock %}
 </html>
